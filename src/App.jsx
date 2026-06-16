@@ -2,6 +2,9 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
+import ProductDetail from "./pages/ProductDetail";
+import Login from "./pages/Login";
+import Wishlist from "./pages/Wishlist";
 
 export default function App() {
   return (
@@ -10,7 +13,10 @@ export default function App() {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
-          {/* coming next: /product/:slug, /login, /wishlist, /profile */}
+          <Route path="/product/:slug" element={<ProductDetail />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/wishlist" element={<Wishlist />} />
+          {/* coming in Base: /profile */}
         </Routes>
       </main>
       <Footer />

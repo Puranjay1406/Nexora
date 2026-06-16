@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { Menu, User, Heart } from "lucide-react";
+import { useWishlist } from "../context/WishlistContext";
 
 export default function Navbar() {
+  const { count } = useWishlist();
+
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-cream/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
@@ -15,7 +18,14 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-4 text-ink">
-          <Link to="/wishlist" aria-label="Wishlist"><Heart size={20} /></Link>
+          <Link to="/wishlist" aria-label="Wishlist" className="relative">
+            <Heart size={20} />
+            {count > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-ink text-[10px] font-medium text-cream">
+                {count}
+              </span>
+            )}
+          </Link>
           <Link to="/login" aria-label="Account"><User size={20} /></Link>
         </div>
       </div>

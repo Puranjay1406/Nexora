@@ -13,25 +13,33 @@ export default function Home() {
   return (
     <>
       {/* HERO */}
-      <section className="mx-auto grid max-w-6xl items-center gap-10 px-6 py-16 md:grid-cols-2 md:py-24">
-        <div>
-          <h1 className="font-display text-5xl leading-tight text-ink md:text-6xl">
-            Everyday Essentials,<br />Smarter Living.
-          </h1>
-          <p className="mt-6 max-w-md leading-relaxed text-muted">
-            Five thoughtfully designed products that bring convenience, style,
-            and efficiency to your daily life.
-          </p>
+      <section className="mx-auto max-w-7xl px-6 py-10 md:py-14">
+        <div className="relative overflow-hidden rounded-2xl">
+          <img
+            src="/images/hero.png"
+            alt="The NEXORA collection"
+            className="h-[320px] w-full object-cover md:h-[460px]"
+          />
+          <div className="absolute inset-0 flex items-center">
+            <div className="px-8 md:px-14 max-w-md">
+              <h1 className="font-display text-4xl font-semibold leading-[1.05] tracking-tight text-ink md:text-5xl">
+                Everyday Essentials,
+                <br />
+                Smarter Living.
+              </h1>
+              <p className="mt-5 max-w-sm leading-relaxed text-muted">
+                Five thoughtfully designed products that bring convenience,
+                style, and efficiency to your daily life.
+              </p>
 
-          <a
-            href="#collection"
-            className="mt-8 inline-flex items-center gap-2 rounded-md bg-ink px-7 py-3 text-sm font-medium text-cream transition hover:opacity-90"
-          >
-            Explore Collection <ArrowRight size={16} />
-          </a>
-        </div>
-        <div className="overflow-hidden rounded-xl bg-sand">
-          <img src="/images/hero.png" alt="The NEXORA collection" className="h-full w-full object-cover" />
+              <a
+                href="#collection"
+                className="mt-7 inline-flex items-center gap-2 rounded-md bg-ink px-7 py-3 text-sm font-medium text-cream transition hover:opacity-90"
+              >
+                Explore Collection <ArrowRight size={16} />
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
