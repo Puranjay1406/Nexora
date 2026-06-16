@@ -1,6 +1,6 @@
 import { ArrowRight, Gem, Leaf, RefreshCw, ShieldCheck, Package } from "lucide-react";
 import { products } from "../data/products";
-import ProductCard from "../Components/ProductCard";
+import ProductCard from "../components/ProductCard";
 
 const features = [
   { icon: Gem, title: "Premium Quality", text: "Thoughtfully designed with high-quality materials." },
