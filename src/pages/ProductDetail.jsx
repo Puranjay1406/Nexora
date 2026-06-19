@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Heart, Check } from "lucide-react";
+import { ArrowLeft, Heart, Check, ShoppingCart, Minus, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { products } from "../data/products";
 import Stars from "../components/Stars";
 import { useWishlist } from "../context/WishlistContext";
+import { useCart } from "../context/CartContext";
 
 // Placeholder reviews — replaced by Firestore data in the Base phase.
 const sampleReviews = [
@@ -18,11 +19,14 @@ export default function ProductDetail() {
 
   // which gallery image is showing in the large frame
   const [activeIndex, setActiveIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { addToCart } = useCart();
 
   // reset to the first image whenever you open a different product
   useEffect(() => {
     setActiveIndex(0);
+    setQuantity(1);
   }, [slug]);
 
   if (!product) {
@@ -52,8 +56,30 @@ export default function ProductDetail() {
       <div className="mt-8 grid gap-12 md:grid-cols-2">
         {/* Gallery */}
         <div>
-          <div className="overflow-hidden rounded-xl bg-sand">
+          <div className="relative overflow-hidden rounded-xl bg-sand">
             <img src={mainImage} alt={product.name} className="h-[460px] w-full object-cover" />
+
+            {gallery.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setActiveIndex((current) => (current > 0 ? current - 1 : gallery.length - 1))}
+                  className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-3 text-ink shadow-md transition hover:bg-white"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveIndex((current) => (current < gallery.length - 1 ? current + 1 : 0))}
+                  className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/90 p-3 text-ink shadow-md transition hover:bg-white"
+                  aria-label="Next image"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </>
+            )}
           </div>
           {gallery.length > 1 && (
             <div className="mt-4 grid grid-cols-4 gap-3">
@@ -93,9 +119,37 @@ export default function ProductDetail() {
 
           <p className="mt-6 font-display text-3xl text-ink">${product.price.toFixed(2)}</p>
 
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="inline-flex items-center rounded-full border border-line bg-white">
+              <button
+                type="button"
+                onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+                className="inline-flex h-10 w-10 items-center justify-center text-muted transition hover:text-ink"
+              >
+                <Minus size={16} />
+              </button>
+              <span className="min-w-[2.5rem] text-center text-sm font-medium text-ink">{quantity}</span>
+              <button
+                type="button"
+                onClick={() => setQuantity((current) => current + 1)}
+                className="inline-flex h-10 w-10 items-center justify-center text-muted transition hover:text-ink"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => addToCart(product.id, quantity)}
+              className="inline-flex items-center gap-2 rounded-md bg-ink px-7 py-3 text-sm font-medium text-cream transition hover:opacity-90"
+            >
+              <ShoppingCart size={16} /> Add {quantity} to Cart
+            </button>
+          </div>
+
           <button
             onClick={() => toggleWishlist(product.id)}
-            className={`mt-6 inline-flex items-center gap-2 rounded-md px-7 py-3 text-sm font-medium transition ${
+            className={`mt-4 inline-flex items-center gap-2 rounded-md px-7 py-3 text-sm font-medium transition ${
               saved
                 ? "border border-ink text-ink hover:bg-sand/50"
                 : "bg-ink text-cream hover:opacity-90"

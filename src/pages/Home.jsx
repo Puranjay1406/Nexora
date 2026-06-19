@@ -1,4 +1,5 @@
-import { ArrowRight, Gem, Leaf, RefreshCw, ShieldCheck, Package } from "lucide-react";
+import { ArrowRight, Gem, Leaf, RefreshCw, ShieldCheck, Package, Search } from "lucide-react";
+import { useMemo, useState } from "react";
 import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
 
@@ -10,6 +11,20 @@ const features = [
 ];
 
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredProducts = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    if (!normalizedQuery) return products;
+
+    return products.filter((product) => {
+      const content = [product.name, product.tagline, product.summary]
+        .join(" ")
+        .toLowerCase();
+      return content.includes(normalizedQuery);
+    });
+  }, [searchQuery]);
+
   return (
     <>
       {/* HERO */}
@@ -45,12 +60,39 @@ export default function Home() {
 
       {/* COLLECTION */}
       <section id="collection" className="mx-auto max-w-6xl px-6 py-12">
-        <h2 className="text-center font-display text-3xl text-ink">Our Collection</h2>
-        <div className="mx-auto mt-3 h-px w-12 bg-line" />
+        <div className="flex flex-col items-center gap-6 text-center">
+          <div>
+            <h2 className="font-display text-3xl text-ink">Our Collection</h2>
+            <div className="mx-auto mt-3 h-px w-12 bg-line" />
+          </div>
+
+          <div className="w-full max-w-2xl">
+            <label htmlFor="product-search" className="sr-only">
+              Search products
+            </label>
+            <div className="relative">
+              <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
+              <input
+                id="product-search"
+                type="search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search products, keywords, or features"
+                className="w-full rounded-full border border-line bg-white px-12 py-4 text-sm text-ink outline-none transition focus:border-ink"
+              />
+            </div>
+          </div>
+        </div>
+
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {products.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((p) => <ProductCard key={p.id} product={p} />)
+          ) : (
+            <div className="col-span-full rounded-[28px] border border-line bg-sand p-10 text-center text-ink">
+              <p className="text-lg font-medium">No products matched your search.</p>
+              <p className="mt-2 text-sm text-muted">Try a different keyword like “alarm”, “belt”, or “bookmark”.</p>
+            </div>
+          )}
         </div>
       </section>
 

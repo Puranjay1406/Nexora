@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ShieldCheck, UserRound, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ShieldCheck, UserRound, Zap, X } from "lucide-react";
 
 function GoogleIcon() {
   return (
@@ -55,7 +56,17 @@ export default function Login() {
         </div>
 
         {/* RIGHT — form */}
-        <div className="p-8 md:p-12">
+        <div className="relative p-8 md:p-12">
+          <div className="absolute right-6 top-6">
+            <Link
+              to="/"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-line text-muted transition hover:bg-sand hover:text-ink"
+              aria-label="Close login"
+            >
+              <X size={18} />
+            </Link>
+          </div>
+
           {/* tabs */}
           <div className="flex gap-8 border-b border-line">
             <button
