@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, User, Heart, ShoppingBag, LogOut, UserCircle } from "lucide-react";
+import { Home, User, Heart, ShoppingBag, LogOut, UserCircle } from "lucide-react";
 import { useWishlist } from "../context/WishlistContext";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -34,9 +34,10 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-cream/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <button className="text-ink" aria-label="Menu">
-          <Menu size={22} />
-        </button>
+        <Link to="/" className="flex items-center gap-2 text-ink transition hover:opacity-70" aria-label="Home">
+          <Home size={22} />
+          <span className="hidden text-sm sm:inline">Home</span>
+        </Link>
 
         <Link to="/" className="text-center leading-tight">
           <div className="font-display text-2xl tracking-[0.3em] text-ink">NEXORA</div>
