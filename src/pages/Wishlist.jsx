@@ -48,7 +48,7 @@ export default function Wishlist() {
               <p className="mt-1 line-clamp-2 text-sm text-muted">{p.tagline}</p>
             </div>
 
-            <p className="hidden font-display text-lg text-ink sm:block">${p.price.toFixed(2)}</p>
+            <p className="hidden font-display text-lg text-ink sm:block">₹{p.price}</p>
 
             <button
               onClick={() => removeFromWishlist(p.id)}

@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ShieldCheck, UserRound, Zap, X } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ShieldCheck, UserRound, Zap } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 function GoogleIcon() {
   return (
@@ -17,16 +18,59 @@ export default function Login() {
   const [mode, setMode] = useState("signin"); // "signin" | "signup"
   const isSignup = mode === "signup";
 
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const { signupWithEmail, loginWithEmail, loginWithGoogle } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // where to send them after success — back where they came from, or home
+  const redirectTo = location.state?.from || "/";
+
+  const handleEmailSubmit = async () => {
+    setError("");
+    if (!email || !password || (isSignup && !name)) {
+      setError("Please fill in all fields.");
+      return;
+    }
+    setBusy(true);
+    try {
+      if (isSignup) {
+        await signupWithEmail(name, email, password);
+      } else {
+        await loginWithEmail(email, password);
+      }
+      navigate(redirectTo, { replace: true });
+    } catch (err) {
+      setError(friendlyError(err.code));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleGoogle = async () => {
+    setError("");
+    setBusy(true);
+    try {
+      await loginWithGoogle();
+      navigate(redirectTo, { replace: true });
+    } catch (err) {
+      setError(friendlyError(err.code));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div className="mx-auto my-10 max-w-5xl px-4">
       <div className="grid overflow-hidden rounded-2xl border border-line bg-cream shadow-sm md:grid-cols-2">
-        {/* LEFT — editorial panel (hidden on mobile) */}
+        {/* LEFT — editorial panel */}
         <div className="relative hidden min-h-[640px] md:block">
-          <img
-            src="/images/login.png"
-            alt="The NEXORA collection"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
+          <img src="/images/login.png" alt="The NEXORA collection" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-cream/70 via-cream/20 to-cream/60" />
           <div className="relative flex h-full flex-col justify-between p-10">
             <div>
@@ -56,32 +100,17 @@ export default function Login() {
         </div>
 
         {/* RIGHT — form */}
-        <div className="relative p-8 md:p-12">
-          <div className="absolute right-6 top-6">
-            <Link
-              to="/"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-line text-muted transition hover:bg-sand hover:text-ink"
-              aria-label="Close login"
-            >
-              <X size={18} />
-            </Link>
-          </div>
-
-          {/* tabs */}
+        <div className="p-8 md:p-12">
           <div className="flex gap-8 border-b border-line">
             <button
-              onClick={() => setMode("signup")}
-              className={`pb-3 text-sm transition ${
-                isSignup ? "border-b-2 border-ink font-medium text-ink" : "text-muted hover:text-ink"
-              }`}
+              onClick={() => { setMode("signup"); setError(""); }}
+              className={`pb-3 text-sm transition ${isSignup ? "border-b-2 border-ink font-medium text-ink" : "text-muted hover:text-ink"}`}
             >
               Create Account
             </button>
             <button
-              onClick={() => setMode("signin")}
-              className={`pb-3 text-sm transition ${
-                !isSignup ? "border-b-2 border-ink font-medium text-ink" : "text-muted hover:text-ink"
-              }`}
+              onClick={() => { setMode("signin"); setError(""); }}
+              className={`pb-3 text-sm transition ${!isSignup ? "border-b-2 border-ink font-medium text-ink" : "text-muted hover:text-ink"}`}
             >
               Sign In
             </button>
@@ -91,17 +120,23 @@ export default function Login() {
             {isSignup ? "Create Account" : "Sign In"}
           </h1>
           <p className="mt-1 text-sm text-muted">
-            {isSignup
-              ? "Join us and start living smarter today."
-              : "Welcome back! Please sign in to your account."}
+            {isSignup ? "Join us and start living smarter today." : "Welcome back! Please sign in to your account."}
           </p>
 
-          <div className="mt-8 space-y-5">
+          {error && (
+            <div className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
+
+          <div className="mt-6 space-y-5">
             {isSignup && (
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-ink">Full Name</label>
                 <input
                   type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   placeholder="Enter your name"
                   className="w-full rounded-md border border-line bg-white px-4 py-3 text-sm text-ink outline-none placeholder:text-muted focus:border-ink"
                 />
@@ -112,6 +147,8 @@ export default function Login() {
               <label className="mb-1.5 block text-sm font-medium text-ink">Email Address</label>
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="w-full rounded-md border border-line bg-white px-4 py-3 text-sm text-ink outline-none placeholder:text-muted focus:border-ink"
               />
@@ -120,12 +157,12 @@ export default function Login() {
             <div>
               <div className="mb-1.5 flex items-center justify-between">
                 <label className="text-sm font-medium text-ink">Password</label>
-                {!isSignup && (
-                  <a href="#" className="text-xs text-muted hover:text-ink">Forgot password?</a>
-                )}
+                {!isSignup && <a href="#" className="text-xs text-muted hover:text-ink">Forgot password?</a>}
               </div>
               <input
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 className="w-full rounded-md border border-line bg-white px-4 py-3 text-sm text-ink outline-none placeholder:text-muted focus:border-ink"
               />
@@ -133,13 +170,14 @@ export default function Login() {
 
             <button
               type="button"
-              className="w-full rounded-md bg-ink py-3 text-sm font-medium text-cream transition hover:opacity-90"
+              onClick={handleEmailSubmit}
+              disabled={busy}
+              className="w-full rounded-md bg-ink py-3 text-sm font-medium text-cream transition hover:opacity-90 disabled:opacity-50"
             >
-              {isSignup ? "Create Account" : "Sign In"}
+              {busy ? "Please wait…" : isSignup ? "Create Account" : "Sign In"}
             </button>
           </div>
 
-          {/* divider */}
           <div className="my-6 flex items-center gap-4">
             <div className="h-px flex-1 bg-line" />
             <span className="text-xs text-muted">or</span>
@@ -148,7 +186,9 @@ export default function Login() {
 
           <button
             type="button"
-            className="flex w-full items-center justify-center gap-3 rounded-md border border-line bg-white py-3 text-sm font-medium text-ink transition hover:bg-sand/50"
+            onClick={handleGoogle}
+            disabled={busy}
+            className="flex w-full items-center justify-center gap-3 rounded-md border border-line bg-white py-3 text-sm font-medium text-ink transition hover:bg-sand/50 disabled:opacity-50"
           >
             <GoogleIcon /> Continue with Google
           </button>
@@ -156,7 +196,7 @@ export default function Login() {
           <p className="mt-6 text-center text-sm text-muted">
             {isSignup ? "Already have an account? " : "Don’t have an account? "}
             <button
-              onClick={() => setMode(isSignup ? "signin" : "signup")}
+              onClick={() => { setMode(isSignup ? "signin" : "signup"); setError(""); }}
               className="font-medium text-ink underline"
             >
               {isSignup ? "Sign in" : "Sign up"}
@@ -172,4 +212,18 @@ export default function Login() {
       </div>
     </div>
   );
+}
+
+// turns Firebase error codes into readable messages
+function friendlyError(code) {
+  switch (code) {
+    case "auth/invalid-email": return "That email address looks invalid.";
+    case "auth/email-already-in-use": return "An account with this email already exists. Try signing in.";
+    case "auth/weak-password": return "Password should be at least 6 characters.";
+    case "auth/invalid-credential":
+    case "auth/wrong-password":
+    case "auth/user-not-found": return "Email or password is incorrect.";
+    case "auth/popup-closed-by-user": return "Google sign-in was cancelled.";
+    default: return "Something went wrong. Please try again.";
+  }
 }

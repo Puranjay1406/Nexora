@@ -1,10 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, Minus, Trash2 } from "lucide-react";
 import { products } from "../data/products";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { getProfile, isProfileComplete } from "../lib/profile";
 
 export default function Cart() {
   const { items, updateQuantity, removeFromCart } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const savedProducts = items
     .map((item) => {
@@ -14,6 +18,22 @@ export default function Cart() {
     .filter(Boolean);
 
   const total = savedProducts.reduce((sum, product) => sum + product.price * product.quantity, 0);
+
+  const handleCheckout = async () => {
+    // 1) must be logged in
+    if (!user) {
+      navigate("/login", { state: { from: "/checkout" } });
+      return;
+    }
+    // 2) must have a complete profile
+    const profile = await getProfile(user.uid);
+    if (!isProfileComplete(profile)) {
+      navigate("/profile", { state: { needsCompletion: true, from: "/checkout" } });
+      return;
+    }
+    // 3) all clear
+    navigate("/checkout");
+  };
 
   if (savedProducts.length === 0) {
     return (
@@ -42,7 +62,7 @@ export default function Cart() {
         </div>
         <div className="rounded-2xl border border-line bg-sand px-5 py-4 text-sm text-ink">
           <p className="font-medium">Order total</p>
-          <p className="mt-1 text-lg">${total.toFixed(2)}</p>
+          <p className="mt-1 text-lg">₹{total}</p>
         </div>
       </div>
 
@@ -58,7 +78,7 @@ export default function Cart() {
                 {product.name}
               </Link>
               <p className="mt-2 text-sm leading-relaxed text-muted">{product.tagline}</p>
-              <p className="mt-3 text-sm text-ink">${product.price.toFixed(2)} each</p>
+              <p className="mt-3 text-sm text-ink">₹{product.price} each</p>
             </div>
 
             <div className="flex flex-col items-start gap-3 sm:items-end">
@@ -97,15 +117,16 @@ export default function Cart() {
           <ArrowLeft size={15} /> Continue shopping
         </Link>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Link
-            to="/checkout"
+          <button
+            type="button"
+            onClick={handleCheckout}
             className="inline-flex items-center justify-center rounded-full bg-ink px-5 py-3 text-sm font-medium text-cream transition hover:opacity-90"
           >
             Proceed to Checkout
-          </Link>
+          </button>
           <div className="rounded-3xl bg-ink px-6 py-4 text-center text-cream">
             <p className="text-sm uppercase tracking-[0.2em]">Ready to checkout</p>
-            <p className="mt-2 text-2xl font-semibold">${total.toFixed(2)}</p>
+            <p className="mt-2 text-2xl font-semibold">₹{total}</p>
           </div>
         </div>
       </div>

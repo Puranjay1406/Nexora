@@ -5,7 +5,7 @@ export const products = [
     number: "01",
     name: "Smart Wake-Up Alarm Clock",
     tagline: "Hidden stop button that gets you out of bed and starts your day right.",
-    price: 49.99,
+    price: 899,
     image: "/images/alarm-clock-2.png",
     gallery: [
      "/images/alarm-clock-1.png",
@@ -29,7 +29,7 @@ export const products = [
     number: "02",
     name: "Multipurpose Elastic Side-Bow Loop Belt",
     tagline: "A stylish, comfortable waist accessory that adjusts with you.",
-    price: 19.99,
+    price: 349,
     image: "/images/belt-2.png",
     gallery: [
       "/images/belt-1.png",
@@ -53,7 +53,7 @@ export const products = [
     number: "03",
     name: "Umbrella Drip Cover",
     tagline: "Keeps your floors dry by collecting water from wet umbrellas.",
-    price: 14.99,
+    price: 249,
     image: "/images/umbrella-2.png",
     gallery: [
       "/images/umbrella-1.png",
@@ -77,7 +77,7 @@ export const products = [
     number: "04",
     name: "Water Bottle Carry Handle",
     tagline: "A universal handle for easy, comfortable carrying — anywhere.",
-    price: 12.99,
+    price: 199,
     image: "/images/bottle-2.png",
     gallery: [
       "/images/bottle-1.png",
@@ -101,7 +101,7 @@ export const products = [
     number: "05",
     name: "Smart Bookmark (No Electronics)",
     tagline: "Marks your exact line so you never lose your place again.",
-    price: 9.99,
+    price: 149,
     image: "/images/bookmark-2.png",
     gallery: [
       "/images/bookmark-1.png",

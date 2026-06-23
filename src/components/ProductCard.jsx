@@ -18,7 +18,7 @@ export default function ProductCard({ product }) {
         <p className="mt-2 text-sm leading-relaxed text-muted">{product.tagline}</p>
 
         <div className="mt-4 flex items-center justify-between text-sm font-medium text-ink">
-          <span>${product.price.toFixed(2)}</span>
+          <span>₹{product.price}</span>
           <span className="inline-flex items-center gap-1 text-muted transition group-hover:text-ink">
             View Details
             <ArrowRight size={15} className="transition group-hover:translate-x-1" />

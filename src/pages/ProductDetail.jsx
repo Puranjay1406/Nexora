@@ -117,7 +117,7 @@ export default function ProductDetail() {
             </span>
           </div>
 
-          <p className="mt-6 font-display text-3xl text-ink">${product.price.toFixed(2)}</p>
+          <p className="mt-6 font-display text-3xl text-ink">₹{product.price}</p>
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="inline-flex items-center rounded-full border border-line bg-white">
